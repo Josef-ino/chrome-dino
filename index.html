@@ -1,0 +1,305 @@
+<html dir="ltr" lang="cs" class="offline"><head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,
+                                 maximum-scale=1.0, user-scalable=no">
+  <title>chrome://dino/ - Dinosauří hra, stisknutím mezerníku začnete hrát</title>
+  <style>/* Copyright 2017 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+a {
+  color: var(--link-color);
+}
+
+body {
+  --background-color: #fff;
+  --error-code-color: var(--google-gray-700);
+  --google-blue-50: rgb(232, 240, 254);
+  --google-blue-100: rgb(210, 227, 252);
+  --google-blue-300: rgb(138, 180, 248);
+  --google-blue-600: rgb(26, 115, 232);
+  --google-blue-700: rgb(25, 103, 210);
+  --google-gray-100: rgb(241, 243, 244);
+  --google-gray-300: rgb(218, 220, 224);
+  --google-gray-500: rgb(154, 160, 166);
+  --google-gray-50: rgb(248, 249, 250);
+  --google-gray-600: rgb(128, 134, 139);
+  --google-gray-700: rgb(95, 99, 104);
+  --google-gray-800: rgb(60, 64, 67);
+  --google-gray-900: rgb(32, 33, 36);
+  --heading-color: var(--google-gray-900);
+  --link-color: rgb(88, 88, 88);
+  --primary-button-fill-color-active: var(--google-blue-700);
+  --primary-button-fill-color: var(--google-blue-600);
+  --primary-button-text-color: #fff;
+  --quiet-background-color: rgb(247, 247, 247);
+  --secondary-button-border-color: var(--google-gray-500);
+  --secondary-button-fill-color: #fff;
+  --secondary-button-hover-border-color: var(--google-gray-600);
+  --secondary-button-hover-fill-color: var(--google-gray-50);
+  --secondary-button-text-color: var(--google-gray-700);
+  --small-link-color: var(--google-gray-700);
+  --text-color: var(--google-gray-700);
+  background: var(--background-color);
+  color: var(--text-color);
+  word-wrap: break-word;
+}
+
+.nav-wrapper .secondary-button {
+  background: var(--secondary-button-fill-color);
+  border: 1px solid var(--secondary-button-border-color);
+  color: var(--secondary-button-text-color);
+  float: none;
+  margin: 0;
+  padding: 8px 16px;
+}
+
+.hidden {
+  display: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-size: 125%;
+}
+
+.icon {
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --background-color: var(--google-gray-900);
+    --error-code-color: var(--google-gray-500);
+    --heading-color: var(--google-gray-500);
+    --link-color: var(--google-blue-300);
+    --primary-button-fill-color-active: rgb(129, 162, 208);
+    --primary-button-fill-color: var(--google-blue-300);
+    --primary-button-text-color: var(--google-gray-900);
+    --quiet-background-color: var(--background-color);
+    --secondary-button-border-color: var(--google-gray-700);
+    --secondary-button-fill-color: var(--google-gray-900);
+    --secondary-button-hover-fill-color: rgb(48, 51, 57);
+    --secondary-button-text-color: var(--google-blue-300);
+    --small-link-color: var(--google-blue-300);
+    --text-color: var(--google-gray-500);
+  }
+}
+</style>
+  <style>/* (zbytek původních stylů beze změny – zkráceno pro čitelnost v této odpovědi,
+     ale v souboru, který si stáhneš/uložíš, ponecháváš PŘESNĚ originální CSS
+     z pasted.txt beze změny) */
+  </style>
+</head>
+<body class="neterror" style="font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 75%">
+
+  <!-- ====== PŘIDANÝ OVLÁDACÍ PANEL PRO ARDUINO (Web Serial) ====== -->
+  <div id="arduino-toolbar" style="
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: #f7f7f7;
+      border-bottom: 1px solid #ddd;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+  ">
+    <button id="connectBtn" style="
+        border:0; border-radius:16px; padding:6px 14px;
+        background:#1a73e8; color:#fff; cursor:pointer;">
+      Připojit Arduino
+    </button>
+    <button id="disconnectBtn" disabled style="
+        border:0; border-radius:16px; padding:6px 14px;
+        background:#d9d9d9; color:#696969; cursor:pointer;">
+      Odpojit
+    </button>
+    <span>Stav: <strong id="serialStatus">Nepřipojeno</strong></span>
+    <span id="serialLastLine" style="color:#666; font-family: monospace;"></span>
+  </div>
+  <div style="height:46px;"></div>
+  <!-- ====== KONEC PŘIDANÉHO PANELU ====== -->
+
+  <div id="content"><!---->
+    <div id="main-frame-error" class="interstitial-wrapper ">
+      <div id="main-content">
+        <div class="icon icon-offline" style="visibility: hidden;"></div>
+        <div id="main-message">
+          <h1>
+            <span>Mezerníkem spustíte hru</span>
+          </h1>
+          <!--?lit$735406440$-->
+
+          <!--?lit$735406440$-->
+
+          <div class="error-code"><!--?lit$735406440$--></div>
+
+          <!--?lit$735406440$-->
+        </div>
+      </div>
+      <div id="buttons" class="nav-wrapper suggested-left">
+        <div id="control-buttons" hidden="">
+          <!--?lit$735406440$-->
+          <!--?lit$735406440$-->
+        </div>
+        <!--?lit$735406440$-->
+      </div>
+      <!--?lit$735406440$-->
+    <div role="application" tabindex="0" title="Dinosauří hra. Pixelizovaný dinosaurus běží pustou krajinou a&nbsp;vyhýbá se přitom kaktusům a&nbsp;pterodaktylům. Když uslyšíte zvukový signál, stisknutím mezerníku přeskočte překážku." aria-label="Dinosauří hra, stisknutím mezerníku začnete hrát" class="runner-container"><canvas class="runner-canvas" width="600" height="150" style="width: 600px; height: 150px;"></canvas><span class="offline-runner-live-region" aria-live="assertive"></span></div><label class="slow-speed-option hidden">Začít pomaleji<input type="checkbox" title="Začít pomaleji" tabindex="0" checked="checked"><span class="slow-speed-toggle"></span></label></div>
+    <!--?lit$735406440$-->
+  </div>
+
+  <div id="offline-resources">
+    <!-- Původní obrázky a zvuky (offline-resources-1x, offline-resources-2x, audio-resources)
+         ponecháváš PŘESNĚ tak, jak jsou v pasted.txt – beze změny. -->
+  </div>
+
+  <script>
+  /* ============================================================
+     PŮVODNÍ CHROME DINO JAVASCRIPT (Runner, Trex, Horizon, atd.)
+     — vkládáš PŘESNĚ celý ten obrovský <script> blok z pasted.txt
+       beze změny, od "function assert" až po
+       "document.addEventListener("DOMContentLoaded",onDocumentLoad);"
+     ============================================================ */
+  </script>
+
+  <script>var loadTimeDataRaw = {"dinoGameA11yAriaLabel":"Dinosauří hra, stisknutím mezerníku začnete hrát","dinoGameA11yAriaLabelHybrid":"Dinosauří hra, klepnutím na dinosaura nebo stisknutím mezerníku začnete hrát","dinoGameA11yAriaLabelKeyboard":"Dinosauří hra, stisknutím mezerníku začnete hrát","dinoGameA11yAriaLabelTouch":"Dinosauří hra, klepnutím začnete hrát","dinoGameA11yDescription":"Dinosauří hra. Pixelizovaný dinosaurus běží pustou krajinou a&nbsp;vyhýbá se přitom kaktusům a&nbsp;pterodaktylům. Když uslyšíte zvukový signál, stisknutím mezerníku přeskočte překážku.","dinoGameA11yGameOver":"Hra skončila. Vaše skóre je $1.","dinoGameA11yHighScore":"Vaše nejvyšší skóre je $1.","dinoGameA11yJump":"Vyskočte!","dinoGameA11ySpeedToggle":"Začít pomaleji","dinoGameA11yStartGame":"Hra byla spuštěna.","dinoGameInstructionsHybrid":"Klepnutím na dinosaura nebo stisknutím mezerníku začnete hrát","dinoGameInstructionsKeyboard":"Mezerníkem spustíte hru","dinoGameInstructionsTouch":"Klepnutím na dinosaura spustíte hru","errorCode":"","fontfamily":"'Segoe UI', Tahoma, sans-serif","fontfamilyMd":"'Segoe UI', Tahoma, sans-serif","fontsize":"75%","heading":{"msg":"Mezerníkem spustíte hru"},"iconClass":"icon-offline","isOfflineError":true,"language":"cs","roundedIconsAttribute":"rounded-icons","textdirection":"ltr","title":"chrome://dino/","webuiRoundedIconsAttribute":"","webuiRoundedIconsEnabled":false};</script>
+
+  <!-- ====== WEB SERIAL — PŘIPOJENÍ NA ARDUINO ====== -->
+  <script>
+  (function () {
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusEl = document.getElementById('serialStatus');
+    const lastLineEl = document.getElementById('serialLastLine');
+
+    let port = null;
+    let reader = null;
+    let keepReading = false;
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    // Simuluje stisk mezerníku / šipky nahoru, na které originální hra reaguje
+    function triggerJump() {
+      const downEvent = new KeyboardEvent('keydown', {
+        key: ' ',
+        code: 'Space',
+        keyCode: 32,
+        which: 32,
+        bubbles: true
+      });
+      const upEvent = new KeyboardEvent('keyup', {
+        key: ' ',
+        code: 'Space',
+        keyCode: 32,
+        which: 32,
+        bubbles: true
+      });
+      document.dispatchEvent(downEvent);
+      setTimeout(() => document.dispatchEvent(upEvent), 50);
+    }
+
+    async function connectArduino() {
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 9600 });
+
+        setStatus('Připojeno');
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+        keepReading = true;
+
+        const decoder = new TextDecoderStream();
+        const readableStreamClosed = port.readable.pipeTo(decoder.writable);
+        reader = decoder.readable.getReader();
+
+        readLoop(readableStreamClosed);
+      } catch (err) {
+        console.error(err);
+        setStatus('Chyba připojení');
+      }
+    }
+
+    async function readLoop(readableStreamClosed) {
+      let buffer = '';
+
+      try {
+        while (keepReading) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            buffer += value;
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop();
+
+            for (const line of lines) {
+              handleArduinoLine(line.trim());
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        try { reader.releaseLock(); } catch (e) {}
+        try { await readableStreamClosed; } catch (e) {}
+      }
+    }
+
+    function handleArduinoLine(line) {
+      if (!line) return;
+      lastLineEl.textContent = line;
+
+      const l = line.toUpperCase();
+
+      // Reaguje na tvoje IR výstupy nebo vlastní texty z Arduina
+      if (
+        l.includes('JUMP') ||
+        l.includes('UP') ||
+        l.includes('OK') ||
+        l.includes('SIPKA NAHORU') ||
+        l.includes('COMMAND=0X14') ||
+        l.includes('COMMAND=0X35')
+      ) {
+        triggerJump();
+      }
+    }
+
+    async function disconnectArduino() {
+      keepReading = false;
+      try {
+        if (reader) {
+          await reader.cancel();
+          reader = null;
+        }
+      } catch (e) {}
+      try {
+        if (port) {
+          await port.close();
+          port = null;
+        }
+      } catch (e) {}
+
+      setStatus('Nepřipojeno');
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+    }
+
+    connectBtn.addEventListener('click', connectArduino);
+    disconnectBtn.addEventListener('click', disconnectArduino);
+
+    if (!('serial' in navigator)) {
+      setStatus('Web Serial není podporován (použij Chrome/Edge)');
+      connectBtn.disabled = true;
+    }
+  })();
+  </script>
+
+</body></html>
